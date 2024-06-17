@@ -133,17 +133,17 @@ class SheetData:
 
     def getClientData(self):
         mainType = self.m_xls_attr_dict["main"]
-        if mainType == "1": #第一种类型  直接 第一列key  对应  dict
+        if mainType == "1": #第一种类型  {key:obj}
             return self.getDataByType1(True)
-        elif mainType == "2":
+        elif mainType == "2": #[obj]
             return self.getDataByType2(True)
-        elif mainType == "3":
+        elif mainType == "3":#{key:{key2:obj}}
             return self.getDataByType3(True)
-        elif mainType == "4":
+        elif mainType == "4":#{key:[obj]}
             return self.getDataByType4(True)
-        elif mainType == "5":
+        elif mainType == "5":#{key:{key2:{key3:obj}}}
             return self.getDataByType5(True)
-        elif mainType == "6":
+        elif mainType == "6":#{key:{key2:[obj]}}
             return self.getDataByType6(True)
 
 

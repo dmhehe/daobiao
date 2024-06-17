@@ -392,12 +392,41 @@ class SheetData:
             value = self.getTsValueType(j, isClient)
             valueName = self.getAttrName(0, j, isClient)
             ListBBB.append("    " + valueName + ": " + value + ";")
+        
         mapText = """export interface AAAObjMap {
     [key: string]: AAAObj;
 }"""
         objText = """export interface AAAObj {
     BBB
 }"""
+
+        AAA = self.file_name
+
+        mapText = mapText.replace("AAA", AAA)
+        objText = objText.replace("AAA", AAA).replace("BBB", "\n".join(ListBBB))
+        return objText +"\n\n"+ mapText
+
+
+    def getTsStatement2(self, isClient=True):
+        
+# interface MyObject {
+#     property1: string;
+#     property2: number;
+#     // 可以根据需要添加更多属性
+# }
+# export type MyObjectArray = MyObject[];
+        ListBBB = []
+        for j in range(0, self.m_colum):
+            if not self.isUseColum(j, isClient):
+                continue
+            value = self.getTsValueType(j, isClient)
+            valueName = self.getAttrName(0, j, isClient)
+            ListBBB.append("    " + valueName + ": " + value + ";")
+        
+        mapText = """export interface AAAObjMap {
+    [key: string]: AAAObj;
+}"""
+        objText = """export type AAAObjArray = AAAObj[];"""
 
         AAA = self.file_name
 

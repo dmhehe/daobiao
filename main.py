@@ -1,3 +1,4 @@
+from typing import Any
 import xls_tool
 
 
@@ -5,10 +6,13 @@ import xls_tool
 class SheetData:
     def __init__(self, xls_file_path, sheet_name) -> None:
         self.m_newline_data = {}
-
+        self.file_name = sheet_name  #文件名就是 表名
+        
+        
         self.m_xls_data = xls_tool.read_sheet_data(xls_file_path, sheet_name)
         xls_data = self.m_xls_data
-
+        
+        
         self.m_colum = len(xls_data[0])
         self.m_row = len(xls_data)
 
@@ -54,11 +58,11 @@ class SheetData:
         return data in self.m_newline_data
 
     def getAttrName(self, i, j, isClient=True):
-        attrName = self.m_attr_name_list[i]["main"]
+        attrName = self.m_attr_name_list[j]["main"]
         if isClient:
-            useName = self.m_client_attr_list[i]["main"]
+            useName = self.m_client_attr_list[j]["main"]
         else:
-            useName = self.m_server_attr_list[i]["main"]
+            useName = self.m_server_attr_list[j]["main"]
 
         if useName not in ["1", "0"]:
             return useName
@@ -69,9 +73,22 @@ class SheetData:
     def getRawValue(self, i, j, isClient=True):
         value_str = self.m_xls_data[i][j]
         return value_str
-
+    
+    def getTsValueType(self, j, isClient=True):
+         typeName = self.m_type_list[j]["main"]
+         if typeName == "num":
+             return "number"
+         elif typeName == "str":
+             return "string"
+         elif typeName == "strlist":
+            return "string[]"
+         elif typeName == "numlist":
+            return "number[]"
+         else:
+             return "any"
+        
     def getValue(self, i, j, isClient=True):
-        typeName = self.m_type_list[i]["main"]
+        typeName = self.m_type_list[j]["main"]
         value_str = self.m_xls_data[i][j]
         if typeName == "num":
             if value_str == "":
@@ -116,7 +133,7 @@ class SheetData:
 
     def getClientData(self):
         mainType = self.m_xls_attr_dict["main"]
-        if mainType == "1":
+        if mainType == "1": #第一种类型  直接 第一列key  对应  dict
             return self.getDataByType1(True)
         elif mainType == "2":
             return self.getDataByType2(True)
@@ -129,6 +146,10 @@ class SheetData:
         elif mainType == "6":
             return self.getDataByType6(True)
 
+
+    
+
+    
     def getDataByType1(self, isClient=True):
         ans_data = {}
         self.addNewLineData(ans_data)
@@ -330,6 +351,61 @@ class SheetData:
 
             curList2.append(line_data)
         return ans_data
+    
+    
+
+    
+    
+    
+    def getTsStatementData(self):
+        mainType = self.m_xls_attr_dict["main"]
+        if mainType == "1":
+            return self.getTsStatement1(True)
+        elif mainType == "2":
+            return self.getDataByType2(True)
+        elif mainType == "3":
+            return self.getDataByType3(True)
+        elif mainType == "4":
+            return self.getDataByType4(True)
+        elif mainType == "5":
+            return self.getDataByType5(True)
+        elif mainType == "6":
+            return self.getDataByType6(True)
+    
+    
+    def getTsStatement1(self, isClient=True):
+        
+# interface MyObject {
+#     property1: string;
+#     property2: number;
+#     // 可以根据需要添加更多属性
+# }
+
+# // 声明一个接口，其中键是字符串，对应的值是 MyObject 类型的对象
+# export interface MyObjectMap {
+#     [key: string]: MyObject;
+# }
+        ListBBB = []
+        for j in range(0, self.m_colum):
+            if not self.isUseColum(j, isClient):
+                continue
+            value = self.getTsValueType(j, isClient)
+            valueName = self.getAttrName(0, j, isClient)
+            ListBBB.append("    " + valueName + ": " + value + ";")
+        mapText = """export interface AAAObjMap {
+    [key: string]: AAAObj;
+}"""
+        objText = """export interface AAAObj {
+    BBB
+}"""
+
+        AAA = self.file_name
+
+        mapText = mapText.replace("AAA", AAA)
+        objText = objText.replace("AAA", AAA).replace("BBB", "\n".join(ListBBB))
+        return objText +"\n\n"+ mapText
+        
+        
     
     def makeJsonFile(self, file_path, isClient=True):
         txt = ""

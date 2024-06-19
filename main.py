@@ -40,13 +40,13 @@ class SheetData:
             attr_dict = xls_tool.getAttrDict(xls_data[3][i])
             self.m_server_attr_list.append(attr_dict)
 
-        self.m_type_list = []#类型名字
+        self.m_type_list = []#类型
         for i in range(self.m_colum):
             attr_dict = xls_tool.getAttrDict(xls_data[4][i])
             self.m_type_list.append(attr_dict)
 
 
-        self.m_desc_list = []#类型名字
+        self.m_desc_list = []#描述
         for i in range(self.m_colum):
             attr_dict = xls_tool.getAttrDict(xls_data[5][i])
             self.m_desc_list.append(attr_dict)
@@ -80,9 +80,9 @@ class SheetData:
              return "number"
          elif typeName == "str":
              return "string"
-         elif typeName == "strlist":
+         elif typeName == "str[]":
             return "string[]"
-         elif typeName == "numlist":
+         elif typeName == "num[]":
             return "number[]"
          else:
              return "any"
@@ -99,13 +99,13 @@ class SheetData:
         elif typeName == "str":
             return self.m_xls_data[i][j]
 
-        elif typeName == "strlist":
+        elif typeName == "str[]":
             if value_str == "":
                 return []
             
             return xls_tool.getStringList(value_str)
         
-        elif typeName == "numlist":
+        elif typeName == "num[]":
             if value_str == "":
                 return []
             return xls_tool.getNumList(value_str) 

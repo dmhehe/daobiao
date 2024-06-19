@@ -362,15 +362,15 @@ class SheetData:
         if mainType == "1":
             return self.getTsStatement1(True)
         elif mainType == "2":
-            return self.getDataByType2(True)
+            return self.getTsStatement2(True)
         elif mainType == "3":
-            return self.getDataByType3(True)
+            return self.getTsStatement3(True)
         elif mainType == "4":
-            return self.getDataByType4(True)
-        elif mainType == "5":
-            return self.getDataByType5(True)
-        elif mainType == "6":
-            return self.getDataByType6(True)
+            return self.getTsStatement4(True)
+        elif mainType == "5":#{key:{key2:{key3:obj}}}
+            return self.getTsStatement5(True)
+        elif mainType == "6":#{key:{key2:[obj]}}
+            return self.getTsStatement6(True)
     
     
     def getTsStatement1(self, isClient=True):
@@ -393,10 +393,10 @@ class SheetData:
             valueName = self.getAttrName(0, j, isClient)
             ListBBB.append("    " + valueName + ": " + value + ";")
         
-        mapText = """export interface AAAObjMap {
-    [key: string]: AAAObj;
+        mapText = """export interface AAADataMap {
+    [key: string]: AAAData;
 }"""
-        objText = """export interface AAAObj {
+        objText = """export interface AAAData {
     BBB
 }"""
 
@@ -423,10 +423,10 @@ class SheetData:
             valueName = self.getAttrName(0, j, isClient)
             ListBBB.append("    " + valueName + ": " + value + ";")
         
-        mapText = """export interface AAAObjMap {
-    [key: string]: AAAObj;
+        mapText = """export type AAADataArray = AAAData[];"""
+        objText = """export interface AAAData {
+    BBB
 }"""
-        objText = """export type AAAObjArray = AAAObj[];"""
 
         AAA = self.file_name
 
@@ -435,7 +435,125 @@ class SheetData:
         return objText +"\n\n"+ mapText
         
         
+
+    def getTsStatement3(self, isClient=True):
+        ListBBB = []
+        for j in range(0, self.m_colum):
+            if not self.isUseColum(j, isClient):
+                continue
+            value = self.getTsValueType(j, isClient)
+            valueName = self.getAttrName(0, j, isClient)
+            ListBBB.append("    " + valueName + ": " + value + ";")
+        
+        mapText = """export interface AAADataMap {
+    [key: string]: AAADataMap2;
+}"""
+
+        map2Text = """export interface AAADataMap2 {
+    [key: string]: AAAData;
+}"""
+
+        objText = """export interface AAAData {
+    BBB
+}"""
+
+        AAA = self.file_name
+
+        mapText = mapText.replace("AAA", AAA)
+        map2Text = mapText.replace("AAA", AAA)
+        objText = objText.replace("AAA", AAA).replace("BBB", "\n".join(ListBBB))
+        return objText +"\n\n"+ map2Text + "\n\n"+ mapText
     
+
+    def getTsStatement4(self, isClient=True):
+        ListBBB = []
+        for j in range(0, self.m_colum):
+            if not self.isUseColum(j, isClient):
+                continue
+            value = self.getTsValueType(j, isClient)
+            valueName = self.getAttrName(0, j, isClient)
+            ListBBB.append("    " + valueName + ": " + value + ";")
+        map2Text = """export interface AAADataMap {
+    [key: string]: AAADataArray;
+}"""
+        mapText = """export type AAADataArray = AAAData[];"""
+        objText = """export interface AAAData {
+    BBB
+}"""
+
+        AAA = self.file_name
+
+        mapText = mapText.replace("AAA", AAA)
+        map2Text = mapText.replace("AAA", AAA)
+        objText = objText.replace("AAA", AAA).replace("BBB", "\n".join(ListBBB))
+        return objText +"\n\n"+ mapText+"\n\n"+ map2Text
+
+    def getTsStatement5(self, isClient=True):
+        ListBBB = []
+        for j in range(0, self.m_colum):
+            if not self.isUseColum(j, isClient):
+                continue
+            value = self.getTsValueType(j, isClient)
+            valueName = self.getAttrName(0, j, isClient)
+            ListBBB.append("    " + valueName + ": " + value + ";")
+        
+        mapText = """export interface AAADataMap {
+    [key: string]: AAADataMap2;
+}"""
+
+        map2Text = """export interface AAADataMap2 {
+    [key: string]: AAADataMap3;
+}"""
+
+        map3Text = """export interface AAADataMap3 {
+    [key: string]: AAAData;
+}"""
+
+
+
+        objText = """export interface AAAData {
+    BBB
+}"""
+
+        AAA = self.file_name
+
+        mapText = mapText.replace("AAA", AAA)
+        map2Text = mapText.replace("AAA", AAA)
+        map3Text = mapText.replace("AAA", AAA)
+        objText = objText.replace("AAA", AAA).replace("BBB", "\n".join(ListBBB))
+        return objText +"\n\n"+ map3Text + "\n\n"+ map2Text + "\n\n"+ mapText
+
+
+    def getTsStatement6(self, isClient=True):
+        ListBBB = []
+        for j in range(0, self.m_colum):
+            if not self.isUseColum(j, isClient):
+                continue
+            value = self.getTsValueType(j, isClient)
+            valueName = self.getAttrName(0, j, isClient)
+            ListBBB.append("    " + valueName + ": " + value + ";")
+        map3Text = """export interface AAADataMap {
+    [key: string]: AAADataMap2;
+}"""
+
+        map2Text = """export interface AAADataMap2 {
+    [key: string]: AAADataArray;
+}"""
+        mapText = """export type AAADataArray = AAAData[];"""
+        objText = """export interface AAAData {
+    BBB
+}"""
+
+        AAA = self.file_name
+
+        mapText = mapText.replace("AAA", AAA)
+        map2Text = mapText.replace("AAA", AAA)
+        objText = objText.replace("AAA", AAA).replace("BBB", "\n".join(ListBBB))
+        return objText +"\n\n"+ mapText+"\n\n"+ map2Text+"\n\n"+ map3Text
+        
+
+
+
     def makeJsonFile(self, file_path, isClient=True):
         txt = ""
         if isClient:

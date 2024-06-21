@@ -1,28 +1,29 @@
-import xlrd
 import re
 import json
+from openpyxl import load_workbook
+
 
 
 ATTR_ROW = 6 #属性行，前6行都是属性行，没有数据的
 variable_name_pattern = re.compile(r'^[a-zA-Z_]\w*$')
 
 def getSheetName(xls_file_path):
-    # 打开一个 xls 文件
-    workbook = xlrd.open_workbook(xls_file_path)
-
-
+    # 打开一个 xlsx 文件
+    workbook = load_workbook(filename=xls_file_path, data_only=True)
+    
     # 获取所有工作表的名字
-    sheets_names = workbook.sheet_names()
-
+    sheets_names = workbook.sheetnames
+    
     # 定义一个正则表达式匹配符合变量命名规则的名称
     # 变量名可以使用字母、数字、下划线，但不能以数字开头
+    variable_name_pattern = re.compile(r'^[a-zA-Z_][a-zA-Z0-9_]*$')
     
-
     # 过滤掉以 "Sheet" 开头和不符合变量命名规则的工作表名称
     filtered_sheet_names = [
         name for name in sheets_names
         if not name.startswith("Sheet") and variable_name_pattern.match(name)
     ]
+    
     return filtered_sheet_names
 
 #留下有用的部分
@@ -71,28 +72,56 @@ def filter_usedata(data):
 
 
 
-#获取xls 里面 某个表 里面数据 二维字符串返回
+# #获取xls 里面 某个表 里面数据 二维字符串返回
+# def read_sheet_data(xls_file_path, sheet_name):
+#     # 打开 xls 文件
+#     workbook = xlrd.open_workbook(xls_file_path)
+    
+#     # 通过名称获取工作表
+#     sheet = workbook.sheet_by_name(sheet_name)
+    
+#     # 读取工作表数据到二维字符串列表
+#     data = []
+#     for row_idx in range(sheet.nrows):
+#         row_data = []
+#         for col_idx in range(sheet.ncols):
+#             # 读取单元格数据并转换为字符串
+#             cell_value = sheet.cell_value(row_idx, col_idx)
+#             # 处理数据类型，确保结果是字符串
+#             print("ssssssssss", cell_value)
+#             if isinstance(cell_value, str):
+#                 row_data.append(cell_value.strip())
+#             else:
+#                 # 对于非字符串类型，如数字，转换为字符串
+#                 row_data.append(str(cell_value).strip())
+#         data.append(row_data)
+#     data = filter_usedata(data)
+#     return data
+
+
 def read_sheet_data(xls_file_path, sheet_name):
-    # 打开 xls 文件
-    workbook = xlrd.open_workbook(xls_file_path)
+    # 打开 xlsx 文件
+    workbook = load_workbook(filename=xls_file_path, data_only=True)
     
     # 通过名称获取工作表
-    sheet = workbook.sheet_by_name(sheet_name)
+    sheet = workbook[sheet_name]
     
     # 读取工作表数据到二维字符串列表
     data = []
-    for row_idx in range(sheet.nrows):
+    for row in sheet.iter_rows(values_only=True):
         row_data = []
-        for col_idx in range(sheet.ncols):
-            # 读取单元格数据并转换为字符串
-            cell_value = sheet.cell_value(row_idx, col_idx)
+        for cell_value in row:
             # 处理数据类型，确保结果是字符串
+            print("ssssssssss", cell_value)
             if isinstance(cell_value, str):
                 row_data.append(cell_value.strip())
+            elif cell_value is None:
+                row_data.append('')
             else:
                 # 对于非字符串类型，如数字，转换为字符串
                 row_data.append(str(cell_value).strip())
         data.append(row_data)
+    
     data = filter_usedata(data)
     return data
 
@@ -103,7 +132,7 @@ def getAttrDict(text, mainName="main"):
     data_dict = {}
     attr_pair_list = text.split(",")
     for attr_pair_text in attr_pair_list:
-        txt1 = attr_pair_list.strip()
+        txt1 = attr_pair_text.strip()
         if not txt1:
             continue
         
@@ -129,6 +158,19 @@ def getStringList(text):
         list2.append(str1.strip())
 
     return list2
+
+
+def convert_string_to_number(s):
+    try:
+        # 尝试将字符串转换为整数
+        return int(s)
+    except ValueError:
+        try:
+            # 如果转换为整数失败，尝试转换为浮点数
+            return float(s)
+        except ValueError:
+            # 如果转换为整数和浮点数都失败，返回原始字符串
+            return s
 
 
 g_Start_Flag = "//****&&*****start****&&****"

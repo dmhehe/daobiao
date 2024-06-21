@@ -5,7 +5,7 @@ import xls_tool
 
 class SheetData:
     def __init__(self, xls_file_path, sheet_name) -> None:
-        self.m_newline_data = {}
+        self.m_newline_data = []
         self.file_name = sheet_name  #文件名就是 表名
         
         
@@ -52,7 +52,7 @@ class SheetData:
             self.m_desc_list.append(attr_dict)
 
     def addNewLineData(self, data):
-        self.m_newline_data[data] = True
+        self.m_newline_data.append(data)
 
     def isNewLineData(self, data):
         return data in self.m_newline_data
@@ -94,7 +94,7 @@ class SheetData:
             if value_str == "":
                 return 0
             
-            return float(value_str)
+            return xls_tool.convert_string_to_number(value_str)
         
         elif typeName == "str":
             return self.m_xls_data[i][j]
@@ -113,11 +113,7 @@ class SheetData:
             if value_str == "":
                 return None
             
-            try:
-                a = float(value_str)
-                return a
-            except:
-                return value_str
+            return xls_tool.convert_string_to_number(value_str)
     
     def isUseColum(self, i, isClient=True):
         if isClient:
@@ -145,9 +141,6 @@ class SheetData:
             return self.getDataByType5(True)
         elif mainType == "6":#{key:{key2:[obj]}}
             return self.getDataByType6(True)
-
-
-    
 
     
     def getDataByType1(self, isClient=True):
@@ -559,21 +552,26 @@ class SheetData:
         if isClient:
             txt = self.getClientData()
         xls_tool.writeJson(file_path, txt)
+        
+    def makeTSFile(self, file_path, isClient=True):
+        txt = ""
+        if isClient:
+            txt = self.getTsStatementData()
+        xls_tool.writeJson(file_path, txt)
     
 def main():
-    xls_file_path = "rrr.xls"
+    xls_file_path = "test1.xlsx"
     sheets_names = xls_tool.getSheetName(xls_file_path)
     print("11111111111111", sheets_names)
 
     for sheet_name in sheets_names:
-        print('222222222222222222222222', xls_tool.read_sheet_data(xls_file_path, sheet_name))
         make_one_sheet(xls_file_path, sheet_name)
 
 
 def make_one_sheet(xls_file_path, sheet_name):
     objSheetData = SheetData(xls_file_path, sheet_name)  
-    objSheetData.makeJsonFile()
-
+    objSheetData.makeJsonFile(sheet_name + ".json")
+    objSheetData.makeTSFile(sheet_name + ".ts")
     
     
         

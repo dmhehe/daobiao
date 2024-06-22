@@ -1,18 +1,28 @@
 1).需要安装python3.9的版本 ，然后安装 openpyxl
 
 
+
+
 2).导表就是把所有xlsx ，转成json， 然后加压成一个bin文件.  登录游戏的时候就解压加载完，游戏内可同步读取使用。
 有个使用代码例子 TestDaobiao.ts
 
-3).main.py 主要变量说明
+
+
+3)Excel文件的说明
+支持6种导出格式1到6  , 在xlsx 的第一行第一列填写， （每种导出什么样的数据，前往看看xlsx 和 导出的 d.ts)
+导表的前六行都是填配置的。第六行以后都是数据。
+前六行每个配置数据其实就是一个没有写{} 的python  dict ，比如  “id,node=属性名字" 其实就是  { main=id,node=属性名字}
+
+
+4).main.py 主要变量说明
 
 #生成json的文件夹，项目里面没有用的，给看看参考而已
 g_JsonPath = "D:/daobiao/json"
 
-#生成ts声明代码的地方，项目有用的，因为是声明，上线编译成js就会没有掉的了
+#生成ts声明代码的地方，项目有用的，因为是声明，上线编译成js就会没有掉的了  要放到项目  project\assets\code\game\daobiao里面
 g_TsPath = "D:/daobiao/ts"
 
-#bin文件就是所有json的zip压缩算法的压缩包，项目有用的， 要放到项目daobiao文件夹里面 
+#bin文件就是所有json的zip压缩算法的压缩包，项目有用的， 要放到项目  project\assets\daobiao 里面
 g_PackPath = "D:/daobiao/pack"
 
 #xlsx的文件夹

@@ -1,10 +1,12 @@
 //----&&----start----&&----
-export interface demo2Data {
+export interface demo1Data {
         id: number;
     name: string;
     zhanli: number;
     goods: number[];
 }
 
-export type demo2DataArray = demo2Data[];
+export interface demo1DataMap {
+    [key: string]: demo1Data;
+}
 //----&&----end----&&----

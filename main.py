@@ -1,6 +1,8 @@
 from typing import Any
 import xls_tool
 
+import os
+import zipfile
 
 
 class SheetData:
@@ -195,17 +197,20 @@ class SheetData:
         useKeyDict = {}
 
         curDict = None
+        curVal = None
         for i in range(6, self.m_row):
             id_val = self.getValue(i, 0, isClient)
             id_raw = self.getRawValue(i, 0, isClient)
-
+            id_name = self.getAttrName(i, 0, isClient)
+            
             if id_raw != "":
                 curDict = {}
                 ans_data[id_val] = curDict
+                curVal = id_val
                 self.addNewLineData(curDict)
                 useKeyDict = {}
 
-            line_data = {}
+            line_data = {id_name:curVal}
 
             key = None
             for j in range(1, self.m_colum):
@@ -234,6 +239,7 @@ class SheetData:
         self.addNewLineData(ans_data)
 
         curList = None
+        curVal = None
         for i in range(6, self.m_row):
             id_val = self.getValue(i, 0, isClient)
             id_raw = self.getRawValue(i, 0, isClient)
@@ -242,9 +248,10 @@ class SheetData:
             if id_raw != "":
                 curList = []
                 ans_data[id_val] = curList
+                curVal = id_val
                 self.addNewLineData(curList)
 
-            line_data = {id_name:id_val}
+            line_data = {id_name:curVal}
 
             for j in range(1, self.m_colum):
                 if not self.isUseColum(j, isClient):
@@ -264,6 +271,9 @@ class SheetData:
 
         parentDict = None
         curDict2 = None
+        curVal1 = None
+        curVal2 = None
+        
         for i in range(6, self.m_row):
             id_val = self.getValue(i, 0, isClient)
             id_raw = self.getRawValue(i, 0, isClient)
@@ -275,15 +285,17 @@ class SheetData:
             if id_raw != "":
                 parentDict = {}
                 ans_data[id_val] = parentDict
+                curVal1 = id_val
                 self.addNewLineData(parentDict)
 
             if id_raw2 != "":
                 curDict2 = {}
                 parentDict[id_val2] = curDict2
+                curVal2 = id_val2
                 self.addNewLineData(curDict2)
                 useKeyDict = {}
 
-            line_data = {id_name:id_val, id_name2:id_val2}
+            line_data = {id_name:curVal1, id_name2:curVal2}
 
             key = None
             for j in range(2, self.m_colum):
@@ -314,6 +326,8 @@ class SheetData:
 
         parentDict = None
         curList2 = None
+        curVal1 = None
+        curVal2 = None
         for i in range(6, self.m_row):
             id_val = self.getValue(i, 0, isClient)
             id_raw = self.getRawValue(i, 0, isClient)
@@ -325,14 +339,16 @@ class SheetData:
             if id_raw != "":
                 parentDict = {}
                 ans_data[id_val] = parentDict
+                curVal1 = id_val
                 self.addNewLineData(parentDict)
 
             if id_raw2 != "":
                 curList2 = []
                 parentDict[id_val2] = curList2
+                curVal2 = id_val2
                 self.addNewLineData(curList2)
 
-            line_data = {id_name:id_val, id_name2:id_val2}
+            line_data = {id_name:curVal1, id_name2:curVal2}
 
             for j in range(2, self.m_colum):
                 if not self.isUseColum(j, isClient):
@@ -560,23 +576,50 @@ class SheetData:
             txt = self.getTsStatementData()
         xls_tool.writeFile(file_path, txt)
     
-def main():
-    xls_file_path = "xlsx/test4.xlsx"
-    sheets_names = xls_tool.getSheetName(xls_file_path)
-    print("11111111111111", sheets_names)
 
-    for sheet_name in sheets_names:
-        make_one_sheet(xls_file_path, sheet_name)
+
+
+
+
+def compress_json_files(folder_path, zip_file_path):
+    
+    directory = os.path.dirname(zip_file_path)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    
+    with zipfile.ZipFile(zip_file_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        for root, dirs, files in os.walk(folder_path):
+            for file in files:
+                if file.endswith('.json'):
+                    file_path = os.path.join(root, file)
+                    zipf.write(file_path, os.path.relpath(file_path, folder_path))
 
 
 g_JsonPath = "D:/daobiao/json"
 g_TsPath = "D:/daobiao/ts"
+g_PackPath = "D:/daobiao/pack"
+
+g_XlsxFloderPath = "D:/daobiao/xlsx"
 
 def make_one_sheet(xls_file_path, sheet_name):
     objSheetData = SheetData(xls_file_path, sheet_name)  
     objSheetData.makeJsonFile(g_JsonPath + "/" + sheet_name + ".json")
-    objSheetData.makeTSFile(g_TsPath + "/" + sheet_name + ".ts")
-    
+    objSheetData.makeTSFile(g_TsPath + "/" + sheet_name + ".d.ts")
+
+
+
+def make_all_xlsx(xls_floder_path):
+    for root, dirs, files in os.walk(xls_floder_path):
+        for file in files:
+            if file.endswith('.xlsx'):
+                xls_file_path = os.path.join(root, file)
+                sheets_names = xls_tool.getSheetName(xls_file_path)
+                for sheet_name in sheets_names:
+                    make_one_sheet(xls_file_path, sheet_name)
     
 
+def main():
+    make_all_xlsx(g_XlsxFloderPath)
+    compress_json_files(g_JsonPath, g_PackPath+"/daobiao.zip")
+    
 main()

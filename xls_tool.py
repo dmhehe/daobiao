@@ -65,38 +65,8 @@ def filter_usedata(data):
     if len(new_data) < 5:
         raise Exception("表有效数据有问题2！！小于5行")
 
-
-
-    # print("6666666666666666", new_data)
     return new_data
 
-
-
-# #获取xls 里面 某个表 里面数据 二维字符串返回
-# def read_sheet_data(xls_file_path, sheet_name):
-#     # 打开 xls 文件
-#     workbook = xlrd.open_workbook(xls_file_path)
-    
-#     # 通过名称获取工作表
-#     sheet = workbook.sheet_by_name(sheet_name)
-    
-#     # 读取工作表数据到二维字符串列表
-#     data = []
-#     for row_idx in range(sheet.nrows):
-#         row_data = []
-#         for col_idx in range(sheet.ncols):
-#             # 读取单元格数据并转换为字符串
-#             cell_value = sheet.cell_value(row_idx, col_idx)
-#             # 处理数据类型，确保结果是字符串
-#             print("ssssssssss", cell_value)
-#             if isinstance(cell_value, str):
-#                 row_data.append(cell_value.strip())
-#             else:
-#                 # 对于非字符串类型，如数字，转换为字符串
-#                 row_data.append(str(cell_value).strip())
-#         data.append(row_data)
-#     data = filter_usedata(data)
-#     return data
 
 
 def read_sheet_data(xls_file_path, sheet_name):
@@ -112,7 +82,7 @@ def read_sheet_data(xls_file_path, sheet_name):
         row_data = []
         for cell_value in row:
             # 处理数据类型，确保结果是字符串
-            print("ssssssssss", cell_value)
+            # print("ssssssssss", cell_value)
             if isinstance(cell_value, str):
                 row_data.append(cell_value.strip())
             elif cell_value is None:
@@ -173,8 +143,8 @@ def convert_string_to_number(s):
             return s
 
 
-g_Start_Flag = "//****&&*****start****&&****"
-g_End_Flag = "//****&&*****end****&&****"
+g_Start_Flag = "//----&&----start----&&----"
+g_End_Flag = "//----&&----end----&&----"
 def writeFile(file_path, str1):
     content = ""
     # 检查文件是否存在

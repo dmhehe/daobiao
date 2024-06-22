@@ -557,7 +557,7 @@ class SheetData:
         txt = ""
         if isClient:
             txt = self.getTsStatementData()
-        xls_tool.writeJson(file_path, txt)
+        xls_tool.writeFile(file_path, txt)
     
 def main():
     xls_file_path = "test1.xlsx"

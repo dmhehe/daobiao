@@ -1,4 +1,4 @@
-import re
+import re, os
 import json
 from openpyxl import load_workbook
 
@@ -177,29 +177,39 @@ g_Start_Flag = "//****&&*****start****&&****"
 g_End_Flag = "//****&&*****end****&&****"
 def writeFile(file_path, str1):
     content = ""
-    # 打开并读取文件
-    with open(file_path, 'r', encoding='utf-8') as file1:
-        # 读取文件的全部内容
-        content = file1.read()
+    # 检查文件是否存在
+    if os.path.exists(file_path):
+        # 打开并读取文件
+        with open(file_path, 'r', encoding='utf-8') as file1:
+            # 读取文件的全部内容
+            content = file1.read()
+    else:
+        # 如果文件不存在，初始化默认内容
+        content = f"{g_Start_Flag}\n{g_End_Flag}"
 
+    # 查找标志位置
+    start_idx = content.find(g_Start_Flag)
+    end_idx = content.find(g_End_Flag)
+
+    # 初始化文本部分
     start_text = ""
-    end_text = "" 
-    start_idx = content.index("g_Start_Flag")
-    end_idx = content.index("g_End_Flag")
-    if start_idx >= 0:
-        start_text = content[0:start_idx]
+    end_text = ""
 
-    if end_idx >= 0:
-        end_text = content[end_idx+len(g_End_Flag):]
+    # 确保标志存在并且索引有效
+    if start_idx != -1:
+        start_text = content[:start_idx]
+    if end_idx != -1:
+        end_text = content[end_idx + len(g_End_Flag):]
 
-
+    # 构建最终文本
     text = start_text + g_Start_Flag + "\n" + str1 + "\n" + g_End_Flag + end_text
 
+    # 写入文件
     with open(file_path, 'w', encoding='utf-8') as file2:
-        # 写入文本
         file2.write(text)
 
 def writeJson(file_path, data):
     with open(file_path, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
+
 

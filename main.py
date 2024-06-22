@@ -601,9 +601,17 @@ def compress_json_files(folder_path, output_zip_path):
                 
                 
 
+
+#生成json的文件夹，项目里面没有用的，给看看参考而已
 g_JsonPath = "D:/daobiao/json"
+
+#生成ts声明代码的地方，项目有用的，因为是声明，上线编译成js就会没有掉的了
 g_TsPath = "D:/daobiao/ts"
+
+#bin文件就是所有json的zip压缩算法的压缩包，项目有用的， 要放到项目daobiao文件夹里面 
 g_PackPath = "D:/daobiao/pack"
+
+#xlsx的文件夹
 g_XlsxFloderPath = "D:/daobiao/xlsx"
 
 

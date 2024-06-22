@@ -581,25 +581,32 @@ class SheetData:
 
 
 
-def compress_json_files(folder_path, zip_file_path):
+
+def compress_json_files(folder_path, output_zip_path):
     
-    directory = os.path.dirname(zip_file_path)
+    directory = os.path.dirname(output_zip_path)
     if not os.path.exists(directory):
         os.makedirs(directory)
     
-    with zipfile.ZipFile(zip_file_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+    # 创建一个新的 zip 文件
+    with zipfile.ZipFile(output_zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        # 遍历文件夹中的所有文件和子文件夹
         for root, dirs, files in os.walk(folder_path):
             for file in files:
-                if file.endswith('.json'):
-                    file_path = os.path.join(root, file)
-                    zipf.write(file_path, os.path.relpath(file_path, folder_path))
-
+                # 获取文件的完整路径
+                file_path = os.path.join(root, file)
+                # 将文件添加到 zip 文件中，并使用相对路径
+                # zipfile 处理文件名时默认使用 UTF-8 编码
+                zipf.write(file_path, os.path.relpath(file_path, folder_path))
+                
+                
 
 g_JsonPath = "D:/daobiao/json"
 g_TsPath = "D:/daobiao/ts"
 g_PackPath = "D:/daobiao/pack"
-
 g_XlsxFloderPath = "D:/daobiao/xlsx"
+
+
 
 def make_one_sheet(xls_file_path, sheet_name):
     objSheetData = SheetData(xls_file_path, sheet_name)  
@@ -620,6 +627,7 @@ def make_all_xlsx(xls_floder_path):
 
 def main():
     make_all_xlsx(g_XlsxFloderPath)
-    compress_json_files(g_JsonPath, g_PackPath+"/daobiao.zip")
+    compress_json_files(g_JsonPath, g_PackPath+"/daobiao.bin")
+    print("完成！！！！")
     
 main()

@@ -204,11 +204,21 @@ def writeFile(file_path, str1):
     # 构建最终文本
     text = start_text + g_Start_Flag + "\n" + str1 + "\n" + g_End_Flag + end_text
 
+
+    directory = os.path.dirname(file_path)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
     # 写入文件
     with open(file_path, 'w', encoding='utf-8') as file2:
         file2.write(text)
 
 def writeJson(file_path, data):
+    
+    directory = os.path.dirname(file_path)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    
     with open(file_path, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 

@@ -196,8 +196,8 @@ class SheetData:
 
         curDict = None
         for i in range(6, self.m_row):
-            id_val = self.getValue(0, j, isClient)
-            id_raw = self.getRawValue(0, j, isClient)
+            id_val = self.getValue(i, 0, isClient)
+            id_raw = self.getRawValue(i, 0, isClient)
 
             if id_raw != "":
                 curDict = {}
@@ -235,9 +235,9 @@ class SheetData:
 
         curList = None
         for i in range(6, self.m_row):
-            id_val = self.getValue(0, j, isClient)
-            id_raw = self.getRawValue(0, j, isClient)
-            id_name = self.getAttrName(0, j, isClient)
+            id_val = self.getValue(i, 0, isClient)
+            id_raw = self.getRawValue(i, 0, isClient)
+            id_name = self.getAttrName(i, 0, isClient)
 
             if id_raw != "":
                 curList = []
@@ -265,12 +265,12 @@ class SheetData:
         parentDict = None
         curDict2 = None
         for i in range(6, self.m_row):
-            id_val = self.getValue(0, j, isClient)
-            id_raw = self.getRawValue(0, j, isClient)
-            id_name = self.getAttrName(0, j, isClient)
-            id_val2 = self.getValue(1, j, isClient)
-            id_raw2 = self.getRawValue(1, j, isClient)
-            id_name2 = self.getAttrName(1, j, isClient)
+            id_val = self.getValue(i, 0, isClient)
+            id_raw = self.getRawValue(i, 0, isClient)
+            id_name = self.getAttrName(i, 0, isClient)
+            id_val2 = self.getValue(i, 1, isClient)
+            id_raw2 = self.getRawValue(i, 1, isClient)
+            id_name2 = self.getAttrName(i, 1, isClient)
 
             if id_raw != "":
                 parentDict = {}
@@ -315,12 +315,12 @@ class SheetData:
         parentDict = None
         curList2 = None
         for i in range(6, self.m_row):
-            id_val = self.getValue(0, j, isClient)
-            id_raw = self.getRawValue(0, j, isClient)
-            id_name = self.getAttrName(0, j, isClient)
-            id_val2 = self.getValue(1, j, isClient)
-            id_raw2 = self.getRawValue(1, j, isClient)
-            id_name2 = self.getAttrName(1, j, isClient)
+            id_val = self.getValue(i, 0, isClient)
+            id_raw = self.getRawValue(i, 0, isClient)
+            id_name = self.getAttrName(i, 0, isClient)
+            id_val2 = self.getValue(i, 1, isClient)
+            id_raw2 = self.getRawValue(i, 1, isClient)
+            id_name2 = self.getAttrName(i, 1, isClient)
 
             if id_raw != "":
                 parentDict = {}
@@ -453,7 +453,7 @@ class SheetData:
         AAA = self.file_name
 
         mapText = mapText.replace("AAA", AAA)
-        map2Text = mapText.replace("AAA", AAA)
+        map2Text = map2Text.replace("AAA", AAA)
         objText = objText.replace("AAA", AAA).replace("BBB", "\n".join(ListBBB))
         return objText +"\n\n"+ map2Text + "\n\n"+ mapText
     
@@ -477,7 +477,7 @@ class SheetData:
         AAA = self.file_name
 
         mapText = mapText.replace("AAA", AAA)
-        map2Text = mapText.replace("AAA", AAA)
+        map2Text = map2Text.replace("AAA", AAA)
         objText = objText.replace("AAA", AAA).replace("BBB", "\n".join(ListBBB))
         return objText +"\n\n"+ mapText+"\n\n"+ map2Text
 
@@ -511,8 +511,8 @@ class SheetData:
         AAA = self.file_name
 
         mapText = mapText.replace("AAA", AAA)
-        map2Text = mapText.replace("AAA", AAA)
-        map3Text = mapText.replace("AAA", AAA)
+        map2Text = map2Text.replace("AAA", AAA)
+        map3Text = map3Text.replace("AAA", AAA)
         objText = objText.replace("AAA", AAA).replace("BBB", "\n".join(ListBBB))
         return objText +"\n\n"+ map3Text + "\n\n"+ map2Text + "\n\n"+ mapText
 
@@ -540,7 +540,8 @@ class SheetData:
         AAA = self.file_name
 
         mapText = mapText.replace("AAA", AAA)
-        map2Text = mapText.replace("AAA", AAA)
+        map2Text = map2Text.replace("AAA", AAA)
+        map3Text = map3Text.replace("AAA", AAA)
         objText = objText.replace("AAA", AAA).replace("BBB", "\n".join(ListBBB))
         return objText +"\n\n"+ mapText+"\n\n"+ map2Text+"\n\n"+ map3Text
         
@@ -560,7 +561,7 @@ class SheetData:
         xls_tool.writeFile(file_path, txt)
     
 def main():
-    xls_file_path = "test1.xlsx"
+    xls_file_path = "xlsx/test4.xlsx"
     sheets_names = xls_tool.getSheetName(xls_file_path)
     print("11111111111111", sheets_names)
 
@@ -568,12 +569,14 @@ def main():
         make_one_sheet(xls_file_path, sheet_name)
 
 
+g_JsonPath = "D:/daobiao/json"
+g_TsPath = "D:/daobiao/ts"
+
 def make_one_sheet(xls_file_path, sheet_name):
     objSheetData = SheetData(xls_file_path, sheet_name)  
-    objSheetData.makeJsonFile(sheet_name + ".json")
-    objSheetData.makeTSFile(sheet_name + ".ts")
+    objSheetData.makeJsonFile(g_JsonPath + "/" + sheet_name + ".json")
+    objSheetData.makeTSFile(g_TsPath + "/" + sheet_name + ".ts")
     
     
-        
 
 main()

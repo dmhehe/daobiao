@@ -628,7 +628,7 @@ def make_one_sheet(xls_file_path, sheet_name):
     objSheetData.makeJsonFile(g_JsonPath + "/" + sheet_name + ".json", sheet_name)
     objSheetData.makeTSFile(g_TsPath + "/" + sheet_name + ".d.ts", sheet_name)
     
-    objSheetData.makeLuaFile(g_LuaPath + "/" + sheet_name + ".lua", sheet_name)
+    objSheetData.makeLuaFile(g_LuaPath + "/" + sheet_name + ".lua", sheet_name, False)
 
 
 

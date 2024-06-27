@@ -10,17 +10,19 @@ import main
 
 
 
-#生成json的文件夹，项目里面没有用的，给看看参考而已
-g_JsonPath = "D:/daobiao/json"
+# #生成json的文件夹，项目里面没有用的，给看看参考而已
+# g_JsonPath = "D:/daobiao/json"
 
-#生成ts声明代码的地方，项目有用的，因为是声明，上线编译成js就会没有掉的了
-g_TsPath = "D:/daobiao/ts"
+# #生成ts声明代码的地方，项目有用的，因为是声明，上线编译成js就会没有掉的了
+# g_TsPath = "D:/daobiao/ts"
 
-#bin文件就是所有json的zip压缩算法的压缩包，项目有用的， 要放到项目daobiao文件夹里面 
-g_PackPath = "D:/daobiao/pack"
+# #bin文件就是所有json的zip压缩算法的压缩包，项目有用的， 要放到项目daobiao文件夹里面 
+# g_PackPath = "D:/daobiao/pack"
 
-#xlsx的文件夹
-g_XlsxFloderPath = "D:/daobiao/xlsx"
+# #xlsx的文件夹
+# g_XlsxFloderPath = "D:/daobiao/xlsx"
+
+# g_LuaPath = "D:/daobiao/lua"
 
 
 attr_list2 = [
@@ -28,6 +30,9 @@ attr_list2 = [
     ["g_TsPath", "ts的文件夹", "str", {"default": ""}],
     ["g_PackPath", "pack的文件夹", "str", {"default": ""}],
     ["g_XlsxFloderPath", "xlsx的文件夹", "str", {"default": ""}],
+    ["g_LuaPath", "lua的文件夹", "str", {"default": ""}],
+    
+    
 ]
 
 
@@ -57,10 +62,17 @@ def do():
         show_popup("请设置xlsx的文件夹")
         return
     
+    if not gg.g_LuaPath:
+        show_popup("请设置lua的文件夹")
+        return
+    
+    
     main.g_JsonPath = gg.g_JsonPath
     main.g_TsPath = gg.g_TsPath
     main.g_PackPath = gg.g_PackPath
     main.g_XlsxFloderPath = gg.g_XlsxFloderPath
+    main.g_LuaPath = gg.g_LuaPath
+    
     
     main.main()
     show_popup("完成！！！")

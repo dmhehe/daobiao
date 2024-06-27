@@ -7,7 +7,7 @@ import zipfile
 
 class SheetData:
     def __init__(self, xls_file_path, sheet_name) -> None:
-        self.m_newline_data = []
+        self.m_line_data_list = []
         self.file_name = sheet_name  #文件名就是 表名
         
         
@@ -53,11 +53,11 @@ class SheetData:
             attr_dict = xls_tool.getAttrDict(xls_data[5][i])
             self.m_desc_list.append(attr_dict)
 
-    def addNewLineData(self, data):
-        self.m_newline_data.append(data)
+    def addOneLineData(self, data):
+        self.m_line_data_list.append(data)
 
     def isNewLineData(self, data):
-        return data in self.m_newline_data
+        return data in self.m_line_data_list
 
     def getAttrName(self, i, j, isClient=True):
         attrName = self.m_attr_name_list[j]["main"]
@@ -105,12 +105,18 @@ class SheetData:
             if value_str == "":
                 return []
             
-            return xls_tool.getStringList(value_str)
+            ans_list = xls_tool.getStringList(value_str)
+            self.addOneLineData(ans_list)
+            return ans_list
         
         elif typeName == "num[]":
             if value_str == "":
                 return []
-            return xls_tool.getNumList(value_str) 
+            
+            ans_list = xls_tool.getNumList(value_str) 
+            self.addOneLineData(ans_list)
+            return ans_list
+        
         elif typeName in ("raw", ""):
             if value_str == "":
                 return None
@@ -129,25 +135,25 @@ class SheetData:
         return True
 
 
-    def getClientData(self):
+    def getTransAllData(self, isClient=True):
         mainType = self.m_xls_attr_dict["main"]
         if mainType == "1": #第一种类型  {key:obj}
-            return self.getDataByType1(True)
+            return self.getDataByType1(isClient)
         elif mainType == "2": #[obj]
-            return self.getDataByType2(True)
+            return self.getDataByType2(isClient)
         elif mainType == "3":#{key:{key2:obj}}
-            return self.getDataByType3(True)
+            return self.getDataByType3(isClient)
         elif mainType == "4":#{key:[obj]}
-            return self.getDataByType4(True)
+            return self.getDataByType4(isClient)
         elif mainType == "5":#{key:{key2:{key3:obj}}}
-            return self.getDataByType5(True)
+            return self.getDataByType5(isClient)
         elif mainType == "6":#{key:{key2:[obj]}}
-            return self.getDataByType6(True)
+            return self.getDataByType6(isClient)
 
     
     def getDataByType1(self, isClient=True):
         ans_data = {}
-        self.addNewLineData(ans_data)
+        
         useKeyDict = {}
         for i in range(6, self.m_row):
             line_data = {}
@@ -169,13 +175,12 @@ class SheetData:
                 raise Exception(f"出现了重复的key {key}")
             else:
                 useKeyDict[key] = 1
-
+            self.addOneLineData(line_data)
             ans_data[key] = line_data
         return ans_data
     
     def getDataByType2(self, isClient=True):
         ans_data = []
-        self.addNewLineData(ans_data)
         for i in range(6, self.m_row):
             line_data = {}
             for j in range(0, self.m_colum):
@@ -186,14 +191,13 @@ class SheetData:
                 value = self.getValue(i, j, isClient)
                 valueName = self.getAttrName(i, j, isClient)
                 line_data[valueName] = value
-                
+            self.addOneLineData(line_data)
             ans_data.append(line_data)
         return ans_data
     
 
     def getDataByType3(self, isClient=True):
         ans_data = {}
-        self.addNewLineData(ans_data)
         useKeyDict = {}
 
         curDict = None
@@ -207,7 +211,7 @@ class SheetData:
                 curDict = {}
                 ans_data[id_val] = curDict
                 curVal = id_val
-                self.addNewLineData(curDict)
+                
                 useKeyDict = {}
 
             line_data = {id_name:curVal}
@@ -230,13 +234,13 @@ class SheetData:
                 raise Exception(f"出现了重复的key {key}")
             else:
                 useKeyDict[key] = 1
-
+            self.addOneLineData(line_data)
             curDict[key] = line_data
         return ans_data
     
     def getDataByType4(self, isClient=True):
         ans_data = {}
-        self.addNewLineData(ans_data)
+        
 
         curList = None
         curVal = None
@@ -249,7 +253,6 @@ class SheetData:
                 curList = []
                 ans_data[id_val] = curList
                 curVal = id_val
-                self.addNewLineData(curList)
 
             line_data = {id_name:curVal}
 
@@ -260,13 +263,12 @@ class SheetData:
                 value = self.getValue(i, j, isClient)
                 valueName = self.getAttrName(i, j, isClient)
                 line_data[valueName] = value
-
+            self.addOneLineData(line_data)
             curList.append(line_data)
         return ans_data
 
     def getDataByType5(self, isClient=True):
         ans_data = {}
-        self.addNewLineData(ans_data)
         useKeyDict = {}
 
         parentDict = None
@@ -286,13 +288,11 @@ class SheetData:
                 parentDict = {}
                 ans_data[id_val] = parentDict
                 curVal1 = id_val
-                self.addNewLineData(parentDict)
 
             if id_raw2 != "":
                 curDict2 = {}
                 parentDict[id_val2] = curDict2
                 curVal2 = id_val2
-                self.addNewLineData(curDict2)
                 useKeyDict = {}
 
             line_data = {id_name:curVal1, id_name2:curVal2}
@@ -315,14 +315,13 @@ class SheetData:
                 raise Exception(f"出现了重复的key {key}")
             else:
                 useKeyDict[key] = 1
-
+            self.addOneLineData(line_data)
             curDict2[key] = line_data
         return ans_data
     
 
     def getDataByType6(self, isClient=True):
         ans_data = {}
-        self.addNewLineData(ans_data)
 
         parentDict = None
         curList2 = None
@@ -340,13 +339,11 @@ class SheetData:
                 parentDict = {}
                 ans_data[id_val] = parentDict
                 curVal1 = id_val
-                self.addNewLineData(parentDict)
 
             if id_raw2 != "":
                 curList2 = []
                 parentDict[id_val2] = curList2
                 curVal2 = id_val2
-                self.addNewLineData(curList2)
 
             line_data = {id_name:curVal1, id_name2:curVal2}
 
@@ -357,7 +354,7 @@ class SheetData:
                 value = self.getValue(i, j, isClient)
                 valueName = self.getAttrName(i, j, isClient)
                 line_data[valueName] = value
-
+            self.addOneLineData(line_data)
             curList2.append(line_data)
         return ans_data
     
@@ -564,13 +561,18 @@ class SheetData:
 
 
 
-    def makeJsonFile(self, file_path, isClient=True):
-        txt = ""
-        if isClient:
-            txt = self.getClientData()
+    def makeJsonFile(self, file_path, sheet_name, isClient=True):
+        
+        txt = self.getTransAllData(isClient)
         xls_tool.writeJson(file_path, txt)
         
-    def makeTSFile(self, file_path, isClient=True):
+        
+    def makeLuaFile(self, file_path, sheet_name, isClient=True):
+        startText = """daobiao = daobiao or {}\ndaobiao.AAA = """.replace("AAA", sheet_name)
+        data = self.getTransAllData(isClient)
+        xls_tool.writeLua(file_path, data, startText, self.m_line_data_list)
+        
+    def makeTSFile(self, file_path, sheet_name, isClient=True):
         txt = ""
         if isClient:
             txt = self.getTsStatementData()
@@ -616,10 +618,17 @@ g_XlsxFloderPath = "D:/daobiao/xlsx"
 
 
 
+#lua的文件夹
+g_LuaPath = "D:/daobiao/lua"
+
+
+
 def make_one_sheet(xls_file_path, sheet_name):
     objSheetData = SheetData(xls_file_path, sheet_name)  
-    objSheetData.makeJsonFile(g_JsonPath + "/" + sheet_name + ".json")
-    objSheetData.makeTSFile(g_TsPath + "/" + sheet_name + ".d.ts")
+    objSheetData.makeJsonFile(g_JsonPath + "/" + sheet_name + ".json", sheet_name)
+    objSheetData.makeTSFile(g_TsPath + "/" + sheet_name + ".d.ts", sheet_name)
+    
+    objSheetData.makeLuaFile(g_LuaPath + "/" + sheet_name + ".lua", sheet_name)
 
 
 
@@ -657,6 +666,9 @@ def main():
     delete_all_files_in_folder(g_JsonPath)
     delete_all_files_in_folder(g_TsPath)
     delete_all_files_in_folder(g_PackPath)
+    delete_all_files_in_folder(g_LuaPath)
+    
+    
     
     make_all_xlsx(g_XlsxFloderPath)
     compress_json_files(g_JsonPath, g_PackPath+"/daobiao.bin")

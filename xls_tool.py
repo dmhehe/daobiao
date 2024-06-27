@@ -143,6 +143,58 @@ def convert_string_to_number(s):
             return s
 
 
+
+
+
+
+def to_lua(data, indent=0, line_data_list=[]):
+    lua_str = ""
+    indent_str = " " * (indent * 4)
+
+    if isinstance(data, dict):
+        if data in line_data_list:
+            lua_str += "{ "
+            for key, value in data.items():
+                if isinstance(key, str):
+                    lua_str += f'["{key}"] = {to_lua(value, 0, line_data_list)}, '
+                else:
+                    lua_str += f'[{key}] = {to_lua(value, 0, line_data_list)}, '
+            lua_str += "}"
+        else:
+            lua_str += "{\n"
+            for key, value in data.items():
+                if isinstance(key, str):
+                    lua_str += f'{indent_str}    ["{key}"] = {to_lua(value, indent + 1, line_data_list)},\n'
+                else:
+                    lua_str += f'{indent_str}    [{key}] = {to_lua(value, indent + 1, line_data_list)},\n'
+            lua_str += indent_str + "}"
+    elif isinstance(data, list):
+        if data in line_data_list:
+            lua_str += "{ "
+            for item in data:
+                lua_str += f'{to_lua(item, 0, line_data_list)}, '
+            lua_str += "}"
+        else:
+            lua_str += "{\n"
+            for item in data:
+                lua_str += f'{indent_str}    {to_lua(item, indent + 1, line_data_list)},\n'
+            lua_str += indent_str + "}"
+    elif isinstance(data, str):
+        lua_str += f'"{data}"'
+    elif isinstance(data, (int, float)):
+        lua_str += str(data)
+    elif data is None:
+        lua_str += "nil"
+    else:
+        raise TypeError(f"Unsupported data type: {type(data)}")
+
+    return lua_str
+
+
+
+
+
+
 g_Start_Flag = "//----&&----start----&&----"
 g_End_Flag = "//----&&----end----&&----"
 def writeFile(file_path, str1):
@@ -191,5 +243,10 @@ def writeJson(file_path, data):
     
     with open(file_path, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
+        
+        
+def writeLua(file_path, data, startText = "", line_data_list=[]):
+    str1 = startText + to_lua(data, 0, line_data_list)
+    writeFile(file_path, str1)
 
 
